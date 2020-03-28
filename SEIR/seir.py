@@ -114,8 +114,8 @@ def steps_SEIR_nb(p_vec, y0, uid, dt, t_inter, nnodes, popnodes, mobility,
                         mv[c] = np.random.binomial(
                             y[c, ori],
                             1 - np.exp(-dt * mobility[ori, dest] / popnodes[ori]))
-                y[:-1, dest] += mv
-                y[:-1, ori] -= mv
+                    y[:-1, dest] += mv
+                    y[:-1, ori] -= mv
 
         p_expose = 1 - np.exp(-dt * p_vec[0][it] *
                               (y[I1] + y[I2] + y[I3]) / popnodes)  # vector
