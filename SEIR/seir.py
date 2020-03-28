@@ -109,10 +109,11 @@ def steps_SEIR_nb(p_vec, y0, uid, dt, t_inter, nnodes, popnodes, mobility,
             y[E] = y[E] + importation[int(t)]
         for ori in range(nnodes):
             for dest in range(nnodes):
-                for c in range(ncomp - 1):
-                    mv[c] = np.random.binomial(
-                        y[c, ori],
-                        1 - np.exp(-dt * mobility[ori, dest] / popnodes[ori]))
+                if mobility[ori, dest] > 0.0:
+                    for c in range(ncomp - 1):
+                        mv[c] = np.random.binomial(
+                            y[c, ori],
+                            1 - np.exp(-dt * mobility[ori, dest] / popnodes[ori]))
                 y[:-1, dest] += mv
                 y[:-1, ori] -= mv
 
