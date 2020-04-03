@@ -1,4 +1,4 @@
-name: unit-tests
+name: tests
 
 on:
   push:
@@ -13,7 +13,7 @@ on:
       - dataseed
 
 jobs:
-  unit-tests:
+  unit:
     runs-on: ubuntu-18.04
     container:
       image: docker://hopkinsidd/covidscenariopipeline:latest-dataseed
@@ -31,3 +31,24 @@ jobs:
           setwd("R/pkgs/hospitalization")
           devtools::test(stop_on_failure=TRUE)
         shell: Rscript {0}
+  integration:
+    runs-on: ubuntu-18.04
+    container:
+      image: docker://hopkinsidd/covidscenariopipeline:latest-dataseed
+      options: --user root
+    steps:
+      - name: Checkout COVID19_Minimal
+        uses: actions/checkout@v2
+        with:
+          repository: HopkinsIDD/COVID19_Minimal
+      - name: Checkout COVIDScenarioPipeline
+        uses: actions/checkout@v2
+        with:
+          path: COVIDScenarioPipeline
+      - name: Run COVID19_Minimal
+        run: |
+          /home/app/python_venv/bin/python3 COVIDScenarioPipeline/simulate.py -c config.yml -s None -n 1 -j 1
+          Rscript COVIDScenarioPipeline/R/scripts/hosp_run.R -s None -d low -j 1
+          Rscript COVIDScenarioPipeline/R/scripts/hosp_run.R -s None -d med -j 1
+          Rscript COVIDScenarioPipeline/R/scripts/hosp_run.R -s None -d high -j 1
+        shell: bash
